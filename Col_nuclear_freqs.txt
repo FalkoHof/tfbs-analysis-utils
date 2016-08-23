@@ -1,0 +1,7 @@
+# 0-order Markov frequencies from file /lustre/scratch/users/falko.hofmann/indices/fasta/Col_nuclear.fa
+# seqs: 5    min: 18585056    max: 30427671    avg: 23829269.6    sum: 119146348    alph: DNA
+# order 0
+A 3.199e-01
+C 1.801e-01
+G 1.801e-01
+T 3.199e-01
