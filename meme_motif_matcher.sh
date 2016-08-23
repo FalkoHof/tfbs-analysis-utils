@@ -24,8 +24,8 @@ pbs_mapping_file=$script_dir/pbs_mapping_file.txt
 input_mapper=`sed -n "${PBS_ARRAY_INDEX} p" $pbs_mapping_file` #read mapping file
 names_mapped=($input_mapper)
 motif_input=${names_mapped[1]} # get the sample dir
-motif_id=${motif_input%.*}
-motif=input_dir/$motif_input
+motif_id=${motif_input##*/}
+motif_id=${motif_id%.*}
 
 #load modules
 module load MEME/4.11.1-foss-2015b
@@ -38,6 +38,6 @@ echo '#########################################################################'
 
 
 #run fimo for motif matching
-fimo --o $output/$motif_id $motif $genome_fasta
+fimo --o $output/$motif_id $motif_input $genome_fasta
 
 echo 'Motif mapping for: '$motif_id
