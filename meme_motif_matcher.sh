@@ -1,19 +1,22 @@
 #!/bin/bash
 #PBS -P rnaseq_nod
 #PBS -N meme_matching
-#PBS -J 1-10
+#PBS -J 1-414
 #PBS -j oe
 #PBS -q workq
-#PBS -o /lustre/scratch/users/falko.hofmann/log/meme_matching/160822/
-#PBS -l walltime=1:00:00
+#PBS -o /lustre/scratch/users/falko.hofmann/log/meme_matching/160822/meme_matching_^array_index^.log
+#PBS -l walltime=0:30:00
 #PBS -l select=1:ncpus=4:mem=8gb
 
 #set variables
 ##### specify folders and variables #####
 genome_fasta=/lustre/scratch/users/$USER/indices/fasta/Col_nuclear.fa
+
 base_dir=/lustre/scratch/users/$USER/tfbs-matching
 motif_dir=$base_dir/all_meme_motifs
 output_dir=$base_dir/fimo_matches
+meme_bg_file=$base_dir/Col_nuclear_freqs.txt
+
 
 script_dir=/lustre/scratch/users/$USER/pipelines/tfbs-analysis-utils
 pbs_mapping_file=$script_dir/pbs_mapping_file.txt
@@ -33,11 +36,14 @@ module load MEME/4.11.1-foss-2015b
 #print some output for logging
 echo '#########################################################################'
 echo 'Mapping motif: '$motif_id
-echo 'Output dir: ' $sample_dir
+echo 'Output dir: ' $output_dir/$motif_id 
 echo '#########################################################################'
 
-
 #run fimo for motif matching
-fimo --o $output/$motif_id $motif_input $genome_fasta
+fimo --bgfile $meme_bg_file --oc $output_dir/$motif_id $motif_input $genome_fasta
 
-echo 'Motif mapping for: '$motif_id
+PATH=$PATH:$base_dir/bedops2.4.20/bin
+
+gff2bed < $output_dir/$motif_id/fimo.gff > $output_dir/$motif_id/fimo.bed
+
+echo 'Finished motif mapping for: '$motif_id
