@@ -15,12 +15,10 @@ genome_fasta=/lustre/scratch/users/$USER/indices/fasta/Col_nuclear.fa
 base_dir=/lustre/scratch/users/$USER/tfbs-matching
 motif_dir=$base_dir/all_meme_motifs
 output_dir=$base_dir/fimo_matches
-meme_bg_file=$base_dir/Col_nuclear_freqs.txt
-
 
 script_dir=/lustre/scratch/users/$USER/pipelines/tfbs-analysis-utils
 pbs_mapping_file=$script_dir/pbs_mapping_file.txt
-
+meme_bg_file=$script_dir/Col_nuclear_freqs.txt
 
 ## build array index
 ##### Obtain Parameters from mapping file using $PBS_ARRAY_INDEX as line number
@@ -42,7 +40,7 @@ echo '#########################################################################'
 #run fimo for motif matching
 fimo --bgfile $meme_bg_file --oc $output_dir/$motif_id $motif_input $genome_fasta
 
-PATH=$PATH:$base_dir/bedops2.4.20/bin
+PATH=$PATH:$script_dir/bedops2.4.20/bin
 
 gff2bed < $output_dir/$motif_id/fimo.gff > $output_dir/$motif_id/fimo.bed
 
