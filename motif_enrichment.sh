@@ -15,23 +15,26 @@ base_dir=/lustre/scratch/users/$USER/tfbs-matching
 motifs_matched=$base_dir/fimo_matches
 motif_dir=$base_dir/all_meme_motifs
 
-#output_dir=$base_dir/fimo_matches
-
 script_dir=/lustre/scratch/users/$USER/pipelines/tfbs-analysis-utils
 pbs_mapping_file=$script_dir/pbs_mapping_file.txt
 
-granges_files=$base_dir/granges/
-granges_file=$granges_files/open_chrom_embryo.bed
-shuffled_regions=$granges_files/shuffled
-shuffled_regions_motifs=$granges_files/shuffled/motifs
+
+#granges_files=$base_dir/granges/
+test_granges_file=/lustre/scratch/users/$USER/peak_calling/fseq/merges/embryo_specific.bed
+
+#test_region_motifs=$base_dir/granges/motifs
+#mkdir $test_region_motifs
+
+shuffled_regions=$base_dir/shuffled
+shuffled_regions_motifs=$shuffled_regions/motifs
 
 mkdir $shuffled_regions
 mkdir $shuffled_regions_motifs
 
 #to make shuffeling reproducible
-seeds_file=$script_dir/utils/seeds.txt
+seeds_file=$script_dir/utils/seed.txt
 #file for shuffeling
-tair10_nuclear=$script_dir/utils/tair10_size.txt
+tair10_nuclear=$script_dir/utils/tair10.genome
 tair10_exclude=$script_dir/utils/tair10_exclude.txt
 
 ## build array index
@@ -42,10 +45,12 @@ motif_input=${names_mapped[1]} # get the sample dir
 motif_id=${motif_input##*/}
 motif_id=${motif_id%.*}
 
+output_dir=$base_dir/enrichment/$motif_id
+mkdir $output_dir
+
 #load modules
 ml BEDTools/2.26.0-foss-2016a
 ml R/3.4.0-foss-2016b
-
 
 #print some output for logging
 echo '#########################################################################'
@@ -53,18 +58,12 @@ echo 'Mapping motif: '$motif_id
 echo 'Output dir: ' $output_dir/$motif_id
 echo '#########################################################################'
 
-
 n_motifs=()
 #shuffle regions for statistics and intersect the motifs
-for seed in $seeds ; do
 
-  bedtools shuffle -i $granges_file \
-    -g $tair10_nuclear \
-    -excl $tair10_exclude \
-    -chrom \
-    -noOverlapping \
-    -seed $seed
-    > $shuffled_regions/$seed.bed
+seeds=`cut -d ' ' -f 2 $seeds_file`
+
+for seed in $seeds ; do
 
   bedtools intersect \
     -a $motifs_matched/$motif_id/fimo.bed \
@@ -74,12 +73,19 @@ for seed in $seeds ; do
     n_motifs+=`wc -l $shuffled_regions_motifs/$seed_$motif_id.bed`
 done
 
+printf "%s\n" "${n_motifs[@]}" > $output_dir/$motif_id/motif_count.txt
+
+
+bedtools intersect \
+  -a $motifs_matched/$motif_id/fimo.bed \
+  -b $test_granges_file -f 1.0 -wa \
+  > $granges_files/open_chrom_embryo_$motif.bed
 
 #do statistics
+Rscript estimate_motif_significance.R \
+  $granges_files/open_chrom_embryo_$motif.bed \
+  $output_dir/$motif_id/motif_count.txt \
+  $output_dir/$motif_id_p-value.txt \
+  $output_dir/$motif_id_ecdf-plot.jpg
 
-Rscript estimate_motif_significance.R
-
-
-
-
-ho 'Finished motif mapping for: '$motif_id
+echo 'Finished motif enrichment for: '$motif_id
