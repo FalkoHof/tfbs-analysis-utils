@@ -4,7 +4,7 @@
 #PBS -J 1-1
 #PBS -j oe
 #PBS -q workq
-#PBS -o /lustre/scratch/users/falko.hofmann/log/motif_enrichment/170514/meme_matching_^array_index^.log
+#PBS -o /lustre/scratch/users/falko.hofmann/pipelines/tfbs-analysis-utils/log/enrichment/enrichment_^array_index^.log
 #PBS -l walltime=0:30:00
 #PBS -l select=1:ncpus=4:mem=8gb
 
@@ -25,7 +25,7 @@ test_granges_file=/lustre/scratch/users/$USER/peak_calling/fseq/merges/embryo_sp
 #test_region_motifs=$base_dir/granges/motifs
 #mkdir $test_region_motifs
 
-shuffled_regions=$base_dir/shuffled
+shuffled_regions=$base_dir/shuffled_bed
 shuffled_regions_motifs=$shuffled_regions/motifs
 
 mkdir $shuffled_regions
@@ -68,7 +68,7 @@ for seed in $seeds ; do
   bedtools intersect \
     -a $motifs_matched/$motif_id/fimo.bed \
     -b $shuffled_regions/$seed.bed -f 1.0 -wa \
-    > $shuffled_regions_motifs/$seed_$motif.bed
+    > $shuffled_regions_motifs/$seed_$motif_id.bed
 
     n_motifs+=`wc -l $shuffled_regions_motifs/$seed_$motif_id.bed`
 done
@@ -79,13 +79,14 @@ printf "%s\n" "${n_motifs[@]}" > $output_dir/$motif_id/motif_count.txt
 bedtools intersect \
   -a $motifs_matched/$motif_id/fimo.bed \
   -b $test_granges_file -f 1.0 -wa \
-  > $granges_files/open_chrom_embryo_$motif.bed
+  > $granges_files/open_chrom_embryo_$motif_id.bed
 
 #do statistics
 Rscript estimate_motif_significance.R \
-  $granges_files/open_chrom_embryo_$motif.bed \
+  $granges_files/open_chrom_embryo_$motif_id.bed \
   $output_dir/$motif_id/motif_count.txt \
   $output_dir/$motif_id_p-value.txt \
-  $output_dir/$motif_id_ecdf-plot.jpg
+  $output_dir/$motif_id_ecdf-plot.jpg\
+  $motif_id
 
 echo 'Finished motif enrichment for: '$motif_id
