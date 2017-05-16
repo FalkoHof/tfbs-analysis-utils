@@ -1,7 +1,7 @@
 #!/bin/bash
 #PBS -P rnaseq_nod
 #PBS -N motif_enrichment
-#PBS -J 1-1
+#PBS -J 1-2
 #PBS -j oe
 #PBS -q workq
 #PBS -o /lustre/scratch/users/falko.hofmann/pipelines/tfbs-analysis-utils/log/enrichment/enrichment_^array_index^.log
@@ -19,6 +19,7 @@ script_dir=/lustre/scratch/users/$USER/pipelines/tfbs-analysis-utils
 pbs_mapping_file=$script_dir/pbs_mapping_file.txt
 
 
+granges_files=$base_dir/test_bed
 #granges_files=$base_dir/granges/
 test_granges_file=/lustre/scratch/users/$USER/peak_calling/fseq/merges/embryo_specific.bed
 
@@ -76,17 +77,10 @@ done
 printf "%s\n" "${n_motifs[@]}" > $output_dir/$motif_id/motif_count.txt
 
 
-bedtools intersect \
-  -a $motifs_matched/$motif_id/fimo.bed \
-  -b $test_granges_file -f 1.0 -wa \
-  > $granges_files/open_chrom_embryo_$motif_id.bed
+eval "bedtools intersect -a  $motifs_matched/$motif_id/fimo.bed -b $test_granges_file -f 1.0 -wa  > $granges_files/open_chrom_embryo_$motif_id.bed"
 
 #do statistics
-Rscript estimate_motif_significance.R \
-  $granges_files/open_chrom_embryo_$motif_id.bed \
-  $output_dir/$motif_id/motif_count.txt \
-  $output_dir/$motif_id_p-value.txt \
-  $output_dir/$motif_id_ecdf-plot.jpg\
-  $motif_id
+
+eval "Rscript $script_dir/estimate_motif_significance.R $granges_files/open_chrom_embryo_$motif_id.bed $output_dir/$motif_id/motif_count.txt  $output_dir/$motif_id_p-value.txt $output_dir/$motif_id_ecdf-plot.jpg $motif_id"
 
 echo 'Finished motif enrichment for: '$motif_id

@@ -1,4 +1,4 @@
-ptions(echo=TRUE)
+options(echo=TRUE)
 args <- commandArgs(trailingOnly = TRUE)
 print(args)
 
