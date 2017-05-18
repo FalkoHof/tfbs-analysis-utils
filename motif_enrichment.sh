@@ -52,7 +52,6 @@ mkdir -p $output_dir
 
 #load modules
 ml BEDTools/2.26.0-foss-2016a
-ml R/3.4.0-foss-2016b
 
 #print some output for logging
 echo '#########################################################################'
@@ -70,9 +69,9 @@ for seed in $seeds ; do
   bedtools intersect \
     -a $motifs_matched/$motif_id/fimo.bed \
     -b $shuffled_regions/$seed.bed -f 1.0 -wa \
-    > $shuffled_regions_motifs/$seed_$motif_id.bed
+    > $shuffled_regions_motifs/$seed-$motif_id.bed
 
-    n_motifs+=(`wc -l $shuffled_regions_motifs/$seed_$motif_id.bed`)
+    n_motifs+=(`wc -l $shuffled_regions_motifs/$seed-$motif_id.bed`)
 done
 
 printf "%s\n" "${n_motifs[@]}" > $output_dir/motif_count.txt
@@ -81,7 +80,8 @@ printf "%s\n" "${n_motifs[@]}" > $output_dir/motif_count.txt
 eval "bedtools intersect -a  $motifs_matched/$motif_id/fimo.bed -b $test_granges_file -f 1.0 -wa  > $granges_files/open_chrom_embryo_$motif_id.bed"
 
 #do statistics
-
+ml libX11/1.6.3-foss-2016a
+ml R/3.4.0-foss-2016b
 eval "Rscript $script_dir/estimate_motif_significance.R $granges_files/open_chrom_embryo_$motif_id.bed $output_dir/motif_count.txt  $output_dir/$motif_id-p-value.txt $output_dir/$motif_id_ecdf-plot.jpg $motif_id"
 
 echo 'Finished motif enrichment for: '$motif_id
