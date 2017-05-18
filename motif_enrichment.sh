@@ -74,8 +74,10 @@ for seed in $seeds ; do
     n_motifs+=(`wc -l $shuffled_regions_motifs/$seed-$motif_id.bed`)
 done
 
-printf "%s\n" "${n_motifs[@]}" > $output_dir/motif_count.txt
+printf "%s\n" "${n_motifs[@]}" > $output_dir/motif_count_tmp.txt
 
+grep -o '[0-9]*' $output_dir/motif_count_tmp.txt > $output_dir/motif_count.txt
+rm -v $output_dir/motif_count_tmp.txt
 
 eval "bedtools intersect -a  $motifs_matched/$motif_id/fimo.bed -b $test_granges_file -f 1.0 -wa  > $granges_files/open_chrom_embryo_$motif_id.bed"
 
