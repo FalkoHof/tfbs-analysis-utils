@@ -72,7 +72,7 @@ for seed in $seeds ; do
     -b $shuffled_regions/$seed.bed -f 1.0 -wa \
     > $shuffled_regions_motifs/$seed_$motif_id.bed
 
-    n_motifs+=`wc -l $shuffled_regions_motifs/$seed_$motif_id.bed`
+    n_motifs+=(`wc -l $shuffled_regions_motifs/$seed_$motif_id.bed`)
 done
 
 printf "%s\n" "${n_motifs[@]}" > $output_dir/motif_count.txt
@@ -82,6 +82,6 @@ eval "bedtools intersect -a  $motifs_matched/$motif_id/fimo.bed -b $test_granges
 
 #do statistics
 
-eval "Rscript $script_dir/estimate_motif_significance.R $granges_files/open_chrom_embryo_$motif_id.bed $output_dir/motif_count.txt  $output_dir/$motif_id_p-value.txt $output_dir/$motif_id_ecdf-plot.jpg $motif_id"
+eval "Rscript $script_dir/estimate_motif_significance.R $granges_files/open_chrom_embryo_$motif_id.bed $output_dir/motif_count.txt  $output_dir/$motif_id-p-value.txt $output_dir/$motif_id_ecdf-plot.jpg $motif_id"
 
 echo 'Finished motif enrichment for: '$motif_id
