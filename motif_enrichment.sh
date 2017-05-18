@@ -10,8 +10,8 @@
 
 #set variables
 ##### specify folders and variables #####
-genome_fasta=/lustre/scratch/users/$USER/indices/fasta/Col_nuclear.fa
 base_dir=/lustre/scratch/users/$USER/tfbs-matching
+
 motifs_matched=$base_dir/fimo_matches
 motif_dir=$base_dir/all_meme_motifs
 
@@ -47,7 +47,7 @@ motif_id=${motif_input##*/}
 motif_id=${motif_id%.*}
 
 output_dir=$base_dir/enrichment/$motif_id
-mkdir $output_dir
+mkdir -p $output_dir
 
 #load modules
 ml BEDTools/2.26.0-foss-2016a
@@ -56,7 +56,7 @@ ml R/3.4.0-foss-2016b
 #print some output for logging
 echo '#########################################################################'
 echo 'Mapping motif: '$motif_id
-echo 'Output dir: ' $output_dir/$motif_id
+echo 'Output dir: ' $output_dir
 echo '#########################################################################'
 
 n_motifs=()
