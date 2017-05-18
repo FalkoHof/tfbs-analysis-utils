@@ -11,14 +11,14 @@ sample.name = args[5]
 
 #read in line count from the test sample
 test.value = try(system(paste('wc -l', test.values.file) ,intern = TRUE))
-test.value <- sapply(strsplit(test.value, " "), "[", 3)
+test.value <- sapply(strsplit(test.value, " "), "[", 1)
 
 #read in data
 random.dist.values <- read.table(random.values.file, header=F, sep =' ', stringsAsFactors = F)
 #fit and estimate ecdf
 P = ecdf(random.dist.values$V1)
 
-#get probabilty value for the "measured value" 
+#get probabilty value for the "measured value"
 test.prob <- P(test.value)
 #calcualte pvalue
 
