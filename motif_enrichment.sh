@@ -20,6 +20,7 @@ pbs_mapping_file=$script_dir/pbs_mapping_file.txt
 
 
 granges_files=$base_dir/test_bed
+mkdir -p $granges_files
 #granges_files=$base_dir/granges/
 test_granges_file=/lustre/scratch/users/$USER/peak_calling/fseq/merges/embryo_specific.bed
 
@@ -74,13 +75,13 @@ for seed in $seeds ; do
     n_motifs+=`wc -l $shuffled_regions_motifs/$seed_$motif_id.bed`
 done
 
-printf "%s\n" "${n_motifs[@]}" > $output_dir/$motif_id/motif_count.txt
+printf "%s\n" "${n_motifs[@]}" > $output_dir/motif_count.txt
 
 
 eval "bedtools intersect -a  $motifs_matched/$motif_id/fimo.bed -b $test_granges_file -f 1.0 -wa  > $granges_files/open_chrom_embryo_$motif_id.bed"
 
 #do statistics
 
-eval "Rscript $script_dir/estimate_motif_significance.R $granges_files/open_chrom_embryo_$motif_id.bed $output_dir/$motif_id/motif_count.txt  $output_dir/$motif_id_p-value.txt $output_dir/$motif_id_ecdf-plot.jpg $motif_id"
+eval "Rscript $script_dir/estimate_motif_significance.R $granges_files/open_chrom_embryo_$motif_id.bed $output_dir/motif_count.txt  $output_dir/$motif_id_p-value.txt $output_dir/$motif_id_ecdf-plot.jpg $motif_id"
 
 echo 'Finished motif enrichment for: '$motif_id
