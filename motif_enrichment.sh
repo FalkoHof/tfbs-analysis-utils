@@ -71,13 +71,11 @@ for seed in $seeds ; do
     -b $shuffled_regions/$seed.bed -f 1.0 -wa \
     > $shuffled_regions_motifs/$seed-$motif_id.bed
 
-    n_motifs+=(`wc -l $shuffled_regions_motifs/$seed-$motif_id.bed`)
+    n_motifs+=(`wc -l $shuffled_regions_motifs/$seed-$motif_id.bed | cut -f1 -d ' '`)
+
 done
 
-printf "%s\n" "${n_motifs[@]}" > $output_dir/motif_count_tmp.txt
-
-grep -o '[0-9]*' $output_dir/motif_count_tmp.txt > $output_dir/motif_count.txt
-rm -v $output_dir/motif_count_tmp.txt
+printf "%s\n" "${n_motifs[@]}" > $output_dir/motif_count.txt
 
 eval "bedtools intersect -a  $motifs_matched/$motif_id/fimo.bed -b $test_granges_file -f 1.0 -wa  > $granges_files/open_chrom_embryo_$motif_id.bed"
 
