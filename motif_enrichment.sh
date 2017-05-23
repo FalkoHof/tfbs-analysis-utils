@@ -80,8 +80,7 @@ printf "%s\n" "${n_motifs[@]}" > $output_dir/motif_count.txt
 eval "bedtools intersect -a  $motifs_matched/$motif_id/fimo.bed -b $test_granges_file -f 1.0 -wa  > $granges_files/open_chrom_embryo_$motif_id.bed"
 
 #do statistics
-ml libX11/1.6.3-foss-2016a
 ml R/3.4.0-foss-2016b
-eval "Rscript $script_dir/estimate_motif_significance.R $granges_files/open_chrom_embryo_$motif_id.bed $output_dir/motif_count.txt  $output_dir/$motif_id-p-value.txt $output_dir/$motif_id_ecdf-plot.jpg $motif_id"
+eval "Rscript $script_dir/estimate_motif_significance.R $granges_files/open_chrom_embryo_$motif_id.bed $output_dir/motif_count.txt  $output_dir/$motif_id-p-value.txt $output_dir/$motif_id_ecdf-plot.pdf $motif_id"
 
 echo 'Finished motif enrichment for: '$motif_id
