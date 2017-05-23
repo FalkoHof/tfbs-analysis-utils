@@ -28,7 +28,7 @@ results.df <- data.frame(sample=sample.name, p_value=p.value)
 write.table(results.df, file = output.file, col.names = F, row.names = F, sep = '\t', quote = F)
 
 #plot ecdf with the p-value
-png(output.plot)
+pdf(output.plot)
 plot(P,pch=20)
 points(test.value,P(test.value), col='red',pch=19)
 dev.off()
