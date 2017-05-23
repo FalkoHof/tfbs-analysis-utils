@@ -13,7 +13,6 @@
 genome_fasta=/lustre/scratch/users/$USER/indices/fasta/Col_nuclear.fa
 
 base_dir=/lustre/scratch/users/$USER/tfbs-matching
-motif_dir=$base_dir/all_meme_motifs
 output_dir=$base_dir/fimo_matches
 
 script_dir=/lustre/scratch/users/$USER/pipelines/tfbs-analysis-utils
@@ -34,7 +33,7 @@ module load MEME/4.11.1-foss-2015b
 #print some output for logging
 echo '#########################################################################'
 echo 'Mapping motif: '$motif_id
-echo 'Output dir: ' $output_dir/$motif_id 
+echo 'Output dir: ' $output_dir/$motif_id
 echo '#########################################################################'
 
 #run fimo for motif matching
